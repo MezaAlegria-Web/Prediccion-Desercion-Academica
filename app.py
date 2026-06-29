@@ -39,9 +39,54 @@ estado_civil_opciones = {
     "Separado legalmente": 6
 }
 
+application_mode_opciones = {
+    "1ra fase - contingente general": 1,
+    "2da fase - contingente general": 17,
+    "3ra fase - contingente general": 18,
+    "Estudiante internacional": 15,
+    "Mayores de 23 años": 39,
+    "Transferencia": 42,
+    "Cambio de curso": 43,
+    "Cambio de institución/curso": 51
+}
+
+course_opciones = {
+    "Animación y Diseño Multimedia": 171,
+    "Ingeniería Informática": 9119,
+    "Enfermería": 9500,
+    "Turismo": 9254,
+    "Gestión": 9147,
+    "Servicio Social": 9238,
+    "Diseño de Comunicación": 9070,
+    "Periodismo y Comunicación": 9773,
+    "Educación Básica": 9853,
+    "Agronomía": 9003
+}
+
+nacionalidad_opciones = {
+    "Portuguesa": 1,
+    "Alemana": 2,
+    "Española": 6,
+    "Italiana": 11,
+    "Inglesa": 14,
+    "Brasileña": 41,
+    "Colombiana": 109
+}
+
+previous_qualification_opciones = {
+    "Educación secundaria": 1,
+    "Bachiller universitario": 2,
+    "Licenciatura / grado": 3,
+    "Maestría": 4,
+    "Doctorado": 5,
+    "Frecuencia de educación superior": 6,
+    "Curso de especialización tecnológica": 39,
+    "Técnico superior profesional": 42
+}
+
 st.info(
-    "Nota: algunas variables como modo de postulación, carrera, nacionalidad, "
-    "calificación previa y ocupaciones se registran mediante códigos numéricos institucionales del dataset."
+    "Nota: algunas variables familiares como la calificación u ocupación de los padres "
+    "se mantienen como códigos numéricos institucionales del dataset."
 )
 
 st.subheader("📋 Datos principales del estudiante")
@@ -52,14 +97,22 @@ with col1:
     estado_civil_txt = st.selectbox("Estado civil", list(estado_civil_opciones.keys()))
     marital_status = estado_civil_opciones[estado_civil_txt]
 
-    application_mode = st.number_input("Modo de postulación", value=17)
+    application_mode_txt = st.selectbox("Modo de postulación", list(application_mode_opciones.keys()))
+    application_mode = application_mode_opciones[application_mode_txt]
+
     application_order = st.number_input("Orden de postulación", value=5)
-    course = st.number_input("Código de carrera", value=171)
+
+    course_txt = st.selectbox("Carrera", list(course_opciones.keys()))
+    course = course_opciones[course_txt]
 
     asistencia_txt = st.selectbox("Tipo de asistencia", list(asistencia_opciones.keys()))
     daytime_evening = asistencia_opciones[asistencia_txt]
 
-    previous_qualification = st.number_input("Calificación previa", value=1)
+    previous_qualification_txt = st.selectbox(
+        "Calificación previa",
+        list(previous_qualification_opciones.keys())
+    )
+    previous_qualification = previous_qualification_opciones[previous_qualification_txt]
 
 with col2:
     previous_qualification_grade = st.number_input("Nota de calificación previa", value=122.0)
@@ -89,7 +142,8 @@ with col3:
     internacional_txt = st.selectbox("¿Estudiante internacional?", list(si_no.keys()))
     international = si_no[internacional_txt]
 
-    nationality = st.number_input("Nacionalidad", value=1)
+    nationality_txt = st.selectbox("Nacionalidad", list(nacionalidad_opciones.keys()))
+    nationality = nacionalidad_opciones[nationality_txt]
 
 st.markdown("---")
 st.subheader("📚 Rendimiento académico")
@@ -219,7 +273,11 @@ if st.button("🔍 Predecir estado académico"):
     resumen = pd.DataFrame({
         "Variable": [
             "Estado civil",
+            "Modo de postulación",
+            "Carrera",
             "Tipo de asistencia",
+            "Calificación previa",
+            "Nacionalidad",
             "Género",
             "Edad",
             "Tiene deuda",
@@ -235,7 +293,11 @@ if st.button("🔍 Predecir estado académico"):
         ],
         "Valor": [
             estado_civil_txt,
+            application_mode_txt,
+            course_txt,
             asistencia_txt,
+            previous_qualification_txt,
+            nationality_txt,
             genero_txt,
             age,
             deuda_txt,
