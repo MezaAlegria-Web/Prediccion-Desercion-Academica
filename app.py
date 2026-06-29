@@ -13,39 +13,66 @@ st.set_page_config(
     layout="wide"
 )
 
-st.title("🎓 Sistema de Predicción de Deserción Académica")
-st.write(
-    "Aplicación web basada en aprendizaje estadístico para estimar el estado académico "
-    "de un estudiante universitario: Dropout, Enrolled o Graduate."
+st.markdown(
+    """
+    <div style="text-align:center;">
+        <h1>🎓 Sistema de Predicción de Deserción Académica</h1>
+        <p style="font-size:18px;">
+        Proyecto de Aprendizaje Estadístico basado en Machine Learning para estimar
+        el estado académico de un estudiante universitario.
+        </p>
+    </div>
+    """,
+    unsafe_allow_html=True
 )
 
 st.markdown("---")
+
+si_no = {"No": 0, "Sí": 1}
+genero_opciones = {"Femenino": 0, "Masculino": 1}
+asistencia_opciones = {"Nocturna": 0, "Diurna": 1}
+estado_civil_opciones = {
+    "Soltero": 1,
+    "Casado": 2,
+    "Viudo": 3,
+    "Divorciado": 4,
+    "Unión de hecho": 5,
+    "Separado legalmente": 6
+}
 
 st.subheader("📋 Datos principales del estudiante")
 
 col1, col2, col3 = st.columns(3)
 
 with col1:
-    marital_status = st.selectbox("Estado civil", [1, 2, 3, 4, 5, 6])
+    marital_status = estado_civil_opciones[
+        st.selectbox("Estado civil", list(estado_civil_opciones.keys()))
+    ]
     application_mode = st.number_input("Modo de postulación", value=17)
     application_order = st.number_input("Orden de postulación", value=5)
     course = st.number_input("Código de carrera", value=171)
-    daytime_evening = st.selectbox("Asistencia diurna/nocturna", [0, 1])
+    daytime_evening = asistencia_opciones[
+        st.selectbox("Tipo de asistencia", list(asistencia_opciones.keys()))
+    ]
     previous_qualification = st.number_input("Calificación previa", value=1)
 
 with col2:
     previous_qualification_grade = st.number_input("Nota de calificación previa", value=122.0)
     admission_grade = st.number_input("Nota de admisión", value=127.3)
-    gender = st.selectbox("Género", [0, 1])
+    gender = genero_opciones[
+        st.selectbox("Género", list(genero_opciones.keys()))
+    ]
     age = st.number_input("Edad al matricularse", value=20)
-    debtor = st.selectbox("¿Tiene deuda?", [0, 1])
-    tuition_fees = st.selectbox("Pagos al día", [0, 1])
+    debtor = si_no[st.selectbox("¿Tiene deuda?", list(si_no.keys()))]
+    tuition_fees = si_no[st.selectbox("¿Pagos al día?", list(si_no.keys()))]
 
 with col3:
-    scholarship = st.selectbox("¿Tiene beca?", [0, 1])
-    displaced = st.selectbox("¿Desplazado?", [0, 1])
-    educational_special_needs = st.selectbox("Necesidades educativas especiales", [0, 1])
-    international = st.selectbox("Estudiante internacional", [0, 1])
+    scholarship = si_no[st.selectbox("¿Tiene beca?", list(si_no.keys()))]
+    displaced = si_no[st.selectbox("¿Estudiante desplazado?", list(si_no.keys()))]
+    educational_special_needs = si_no[
+        st.selectbox("¿Necesidades educativas especiales?", list(si_no.keys()))
+    ]
+    international = si_no[st.selectbox("¿Estudiante internacional?", list(si_no.keys()))]
     nationality = st.number_input("Nacionalidad", value=1)
 
 st.markdown("---")
@@ -173,15 +200,11 @@ st.markdown("---")
 
 if st.button("🔍 Predecir estado académico"):
     datos_scaled = scaler.transform(datos)
-
     prediccion = modelo.predict(datos_scaled)
     resultado = encoder.inverse_transform(prediccion)[0]
 
-    if hasattr(modelo, "predict_proba"):
-        probabilidades = modelo.predict_proba(datos_scaled)[0]
-        probabilidad_maxima = np.max(probabilidades) * 100
-    else:
-        probabilidad_maxima = None
+    probabilidades = modelo.predict_proba(datos_scaled)[0]
+    probabilidad_maxima = np.max(probabilidades) * 100
 
     st.subheader("📌 Resultado de la predicción")
 
@@ -195,9 +218,28 @@ if st.button("🔍 Predecir estado académico"):
         st.success("🟢 Resultado estimado: Graduate")
         st.write("El estudiante presenta alta probabilidad de éxito académico.")
 
-    if probabilidad_maxima is not None:
-        st.metric("Nivel de confianza del modelo", f"{probabilidad_maxima:.2f}%")
-        st.progress(int(probabilidad_maxima))
+    st.metric("Nivel de confianza del modelo", f"{probabilidad_maxima:.2f}%")
+    st.progress(int(probabilidad_maxima))
+
+    st.markdown("### 📊 Probabilidades por clase")
+
+    for clase, prob in zip(encoder.classes_, probabilidades):
+        porcentaje = prob * 100
+        st.write(f"{clase}: {porcentaje:.2f}%")
+        st.progress(int(porcentaje))
 
     st.markdown("### Datos ingresados")
     st.dataframe(datos)
+
+st.markdown("---")
+
+st.markdown(
+    """
+    <div style="text-align:center; font-size:14px;">
+        Proyecto Final de Aprendizaje Estadístico<br>
+        Sistema de Predicción de Deserción Académica Universitaria<br>
+        Desarrollado con Python, Scikit-Learn, GitHub y Streamlit
+    </div>
+    """,
+    unsafe_allow_html=True
+)
