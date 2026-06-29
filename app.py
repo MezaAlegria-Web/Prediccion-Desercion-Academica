@@ -4,9 +4,17 @@ import joblib
 import numpy as np
 from datetime import datetime
 
+# =========================
+# CARGA DEL MODELO
+# =========================
+
 modelo = joblib.load("modelo_desercion.pkl")
 scaler = joblib.load("scaler.pkl")
 encoder = joblib.load("encoder.pkl")
+
+# =========================
+# CONFIGURACIÓN DE PÁGINA
+# =========================
 
 st.set_page_config(
     page_title="Predicción de Deserción Académica",
@@ -26,150 +34,81 @@ st.markdown("""
 
 st.markdown("---")
 
-si_no = {"No": 0, "Sí": 1}
-genero_opciones = {"Femenino": 0, "Masculino": 1}
-asistencia_opciones = {"Nocturna": 0, "Diurna": 1}
-
-estado_civil_opciones = {
-    "Soltero": 1,
-    "Casado": 2,
-    "Viudo": 3,
-    "Divorciado": 4,
-    "Unión de hecho": 5,
-    "Separado legalmente": 6
-}
-
-application_mode_opciones = {
-    "1ra fase - contingente general": 1,
-    "2da fase - contingente general": 17,
-    "3ra fase - contingente general": 18,
-    "Estudiante internacional": 15,
-    "Mayores de 23 años": 39,
-    "Transferencia": 42,
-    "Cambio de curso": 43,
-    "Cambio de institución/curso": 51
-}
-
-course_opciones = {
-    "Animación y Diseño Multimedia": 171,
-    "Ingeniería Informática": 9119,
-    "Enfermería": 9500,
-    "Turismo": 9254,
-    "Gestión": 9147,
-    "Servicio Social": 9238,
-    "Diseño de Comunicación": 9070,
-    "Periodismo y Comunicación": 9773,
-    "Educación Básica": 9853,
-    "Agronomía": 9003
-}
-
-nacionalidad_opciones = {
-    "Portuguesa": 1,
-    "Alemana": 2,
-    "Española": 6,
-    "Italiana": 11,
-    "Inglesa": 14,
-
-    # América
-    "Argentina": 40,
-    "Boliviana": 50,
-    "Brasileña": 41,
-    "Canadiense": 60,
-    "Chilena": 70,
-    "Colombiana": 109,
-    "Costarricense": 80,
-    "Cubana": 81,
-    "Dominicana": 82,
-    "Ecuatoriana": 83,
-    "Estadounidense": 84,
-    "Guatemalteca": 85,
-    "Haitiana": 86,
-    "Hondureña": 87,
-    "Jamaicana": 88,
-    "Mexicana": 89,
-    "Nicaragüense": 90,
-    "Panameña": 91,
-    "Paraguaya": 92,
-    "Peruana": 93,
-    "Salvadoreña": 94,
-    "Uruguaya": 95,
-    "Venezolana": 96
-}
-
-previous_qualification_opciones = {
-    "Educación secundaria": 1,
-    "Bachiller universitario": 2,
-    "Licenciatura / grado": 3,
-    "Maestría": 4,
-    "Doctorado": 5,
-    "Frecuencia de educación superior": 6,
-    "Curso de especialización tecnológica": 39,
-    "Técnico superior profesional": 42
-}
-
 st.info(
-    "Nota: algunas variables familiares como la calificación u ocupación de los padres "
-    "se mantienen como códigos numéricos institucionales del dataset."
+    "Los campos numéricos respetan la codificación original del dataset utilizado "
+    "para entrenar el modelo. Esto permite mantener la consistencia de las predicciones."
 )
+
+with st.expander("📖 Ver leyenda de códigos del dataset"):
+    st.markdown("""
+### Estado civil
+- 1 = Soltero
+- 2 = Casado
+- 3 = Viudo
+- 4 = Divorciado
+- 5 = Unión de hecho
+- 6 = Separado legalmente
+
+### Tipo de asistencia
+- 0 = Nocturna
+- 1 = Diurna
+
+### Género
+- 0 = Femenino
+- 1 = Masculino
+
+### Variables binarias
+Aplica para: desplazado, necesidades educativas especiales, deudor, pagos al día, becado e internacional.
+
+- 0 = No
+- 1 = Sí
+
+### Variables codificadas por el dataset
+Los campos como **modo de postulación**, **código de carrera**, **nacionalidad**, 
+**calificación previa**, **calificación de los padres** y **ocupación de los padres** 
+corresponden a códigos definidos por el conjunto de datos original.
+
+Estos códigos se mantienen sin modificación para no alterar la estructura usada durante el entrenamiento del modelo.
+""")
+
+# =========================
+# FORMULARIO
+# =========================
 
 st.subheader("📋 Datos principales del estudiante")
 
 col1, col2, col3 = st.columns(3)
 
 with col1:
-    estado_civil_txt = st.selectbox("Estado civil", list(estado_civil_opciones.keys()))
-    marital_status = estado_civil_opciones[estado_civil_txt]
-
-    application_mode_txt = st.selectbox("Modo de postulación", list(application_mode_opciones.keys()))
-    application_mode = application_mode_opciones[application_mode_txt]
-
+    marital_status = st.number_input("Estado civil", min_value=1, max_value=6, value=1)
+    application_mode = st.number_input("Modo de postulación", value=17)
     application_order = st.number_input("Orden de postulación", value=5)
-
-    course_txt = st.selectbox("Carrera", list(course_opciones.keys()))
-    course = course_opciones[course_txt]
-
-    asistencia_txt = st.selectbox("Tipo de asistencia", list(asistencia_opciones.keys()))
-    daytime_evening = asistencia_opciones[asistencia_txt]
-
-    previous_qualification_txt = st.selectbox(
-        "Calificación previa",
-        list(previous_qualification_opciones.keys())
-    )
-    previous_qualification = previous_qualification_opciones[previous_qualification_txt]
+    course = st.number_input("Código de carrera", value=171)
+    daytime_evening = st.number_input("Tipo de asistencia", min_value=0, max_value=1, value=1)
+    previous_qualification = st.number_input("Calificación previa", value=1)
 
 with col2:
     previous_qualification_grade = st.number_input("Nota de calificación previa", value=122.0)
     admission_grade = st.number_input("Nota de admisión", value=127.3)
-
-    genero_txt = st.selectbox("Género", list(genero_opciones.keys()))
-    gender = genero_opciones[genero_txt]
-
-    age = st.number_input("Edad al matricularse", value=20)
-
-    deuda_txt = st.selectbox("¿Tiene deuda?", list(si_no.keys()))
-    debtor = si_no[deuda_txt]
-
-    pagos_txt = st.selectbox("¿Pagos al día?", list(si_no.keys()))
-    tuition_fees = si_no[pagos_txt]
+    gender = st.number_input("Género", min_value=0, max_value=1, value=1)
+    age = st.number_input("Edad al matricularse", min_value=15, max_value=80, value=20)
+    debtor = st.number_input("¿Tiene deuda?", min_value=0, max_value=1, value=0)
+    tuition_fees = st.number_input("¿Pagos al día?", min_value=0, max_value=1, value=1)
 
 with col3:
-    beca_txt = st.selectbox("¿Tiene beca?", list(si_no.keys()))
-    scholarship = si_no[beca_txt]
-
-    desplazado_txt = st.selectbox("¿Estudiante desplazado?", list(si_no.keys()))
-    displaced = si_no[desplazado_txt]
-
-    necesidades_txt = st.selectbox("¿Necesidades educativas especiales?", list(si_no.keys()))
-    educational_special_needs = si_no[necesidades_txt]
-
-    internacional_txt = st.selectbox("¿Estudiante internacional?", list(si_no.keys()))
-    international = si_no[internacional_txt]
-
-    nationality_txt = st.selectbox("Nacionalidad", list(nacionalidad_opciones.keys()))
-    nationality = nacionalidad_opciones[nationality_txt]
-
+    scholarship = st.number_input("¿Tiene beca?", min_value=0, max_value=1, value=0)
+    displaced = st.number_input("¿Estudiante desplazado?", min_value=0, max_value=1, value=1)
+    educational_special_needs = st.number_input(
+        "¿Necesidades educativas especiales?",
+        min_value=0,
+        max_value=1,
+        value=0
+    )
+    international = st.number_input("¿Estudiante internacional?", min_value=0, max_value=1, value=0)
+    nationality = st.number_input("Nacionalidad", value=1)
 
 st.markdown("---")
+
 st.subheader("📚 Rendimiento académico")
 
 col4, col5 = st.columns(2)
@@ -191,6 +130,7 @@ with col5:
     cu2_without = st.number_input("Sin evaluación 2do semestre", value=0)
 
 st.markdown("---")
+
 st.subheader("👨‍👩‍👧 Variables familiares y socioeconómicas")
 
 col6, col7, col8 = st.columns(3)
@@ -208,15 +148,32 @@ with col8:
     inflation = st.number_input("Tasa de inflación", value=1.4)
     gdp = st.number_input("PIB", value=1.74)
 
+# =========================
+# ORDEN EXACTO DE COLUMNAS
+# =========================
+
 columnas = [
-    'Marital Status', 'Application mode', 'Application order', 'Course',
-    'Daytime/evening attendance', 'Previous qualification',
-    'Previous qualification (grade)', 'Nacionality',
-    "Mother's qualification", "Father's qualification",
-    "Mother's occupation", "Father's occupation", 'Admission grade',
-    'Displaced', 'Educational special needs', 'Debtor',
-    'Tuition fees up to date', 'Gender', 'Scholarship holder',
-    'Age at enrollment', 'International',
+    'Marital Status',
+    'Application mode',
+    'Application order',
+    'Course',
+    'Daytime/evening attendance',
+    'Previous qualification',
+    'Previous qualification (grade)',
+    'Nacionality',
+    "Mother's qualification",
+    "Father's qualification",
+    "Mother's occupation",
+    "Father's occupation",
+    'Admission grade',
+    'Displaced',
+    'Educational special needs',
+    'Debtor',
+    'Tuition fees up to date',
+    'Gender',
+    'Scholarship holder',
+    'Age at enrollment',
+    'International',
     'Curricular units 1st sem (credited)',
     'Curricular units 1st sem (enrolled)',
     'Curricular units 1st sem (evaluations)',
@@ -229,26 +186,57 @@ columnas = [
     'Curricular units 2nd sem (approved)',
     'Curricular units 2nd sem (grade)',
     'Curricular units 2nd sem (without evaluations)',
-    'Unemployment rate', 'Inflation rate', 'GDP'
+    'Unemployment rate',
+    'Inflation rate',
+    'GDP'
 ]
 
 valores = [
-    marital_status, application_mode, application_order, course,
-    daytime_evening, previous_qualification, previous_qualification_grade,
-    nationality, mother_qualification, father_qualification,
-    mother_occupation, father_occupation, admission_grade,
-    displaced, educational_special_needs, debtor, tuition_fees,
-    gender, scholarship, age, international,
-    cu1_credited, cu1_enrolled, cu1_evaluations, cu1_approved,
-    cu1_grade, cu1_without,
-    cu2_credited, cu2_enrolled, cu2_evaluations, cu2_approved,
-    cu2_grade, cu2_without,
-    unemployment, inflation, gdp
+    marital_status,
+    application_mode,
+    application_order,
+    course,
+    daytime_evening,
+    previous_qualification,
+    previous_qualification_grade,
+    nationality,
+    mother_qualification,
+    father_qualification,
+    mother_occupation,
+    father_occupation,
+    admission_grade,
+    displaced,
+    educational_special_needs,
+    debtor,
+    tuition_fees,
+    gender,
+    scholarship,
+    age,
+    international,
+    cu1_credited,
+    cu1_enrolled,
+    cu1_evaluations,
+    cu1_approved,
+    cu1_grade,
+    cu1_without,
+    cu2_credited,
+    cu2_enrolled,
+    cu2_evaluations,
+    cu2_approved,
+    cu2_grade,
+    cu2_without,
+    unemployment,
+    inflation,
+    gdp
 ]
 
 datos = pd.DataFrame([valores], columns=columnas)
 
 st.markdown("---")
+
+# =========================
+# PREDICCIÓN
+# =========================
 
 if st.button("🔍 Predecir estado académico"):
     datos_scaled = scaler.transform(datos)
@@ -298,7 +286,7 @@ if st.button("🔍 Predecir estado académico"):
         "Variable": [
             "Estado civil",
             "Modo de postulación",
-            "Carrera",
+            "Código de carrera",
             "Tipo de asistencia",
             "Calificación previa",
             "Nacionalidad",
@@ -316,17 +304,17 @@ if st.button("🔍 Predecir estado académico"):
             "Fecha y hora de predicción"
         ],
         "Valor": [
-            estado_civil_txt,
-            application_mode_txt,
-            course_txt,
-            asistencia_txt,
-            previous_qualification_txt,
-            nationality_txt,
-            genero_txt,
+            marital_status,
+            application_mode,
+            course,
+            daytime_evening,
+            previous_qualification,
+            nationality,
+            gender,
             age,
-            deuda_txt,
-            pagos_txt,
-            beca_txt,
+            debtor,
+            tuition_fees,
+            scholarship,
             admission_grade,
             cu1_grade,
             cu2_grade,
