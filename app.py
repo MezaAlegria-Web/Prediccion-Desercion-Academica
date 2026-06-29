@@ -69,8 +69,31 @@ nacionalidad_opciones = {
     "Española": 6,
     "Italiana": 11,
     "Inglesa": 14,
+
+    # América
+    "Argentina": 40,
+    "Boliviana": 50,
     "Brasileña": 41,
-    "Colombiana": 109
+    "Canadiense": 60,
+    "Chilena": 70,
+    "Colombiana": 109,
+    "Costarricense": 80,
+    "Cubana": 81,
+    "Dominicana": 82,
+    "Ecuatoriana": 83,
+    "Estadounidense": 84,
+    "Guatemalteca": 85,
+    "Haitiana": 86,
+    "Hondureña": 87,
+    "Jamaicana": 88,
+    "Mexicana": 89,
+    "Nicaragüense": 90,
+    "Panameña": 91,
+    "Paraguaya": 92,
+    "Peruana": 93,
+    "Salvadoreña": 94,
+    "Uruguaya": 95,
+    "Venezolana": 96
 }
 
 previous_qualification_opciones = {
@@ -144,6 +167,7 @@ with col3:
 
     nationality_txt = st.selectbox("Nacionalidad", list(nacionalidad_opciones.keys()))
     nationality = nacionalidad_opciones[nationality_txt]
+
 
 st.markdown("---")
 st.subheader("📚 Rendimiento académico")
