@@ -40,6 +40,7 @@ st.info(
 )
 
 with st.expander("📖 Ver leyenda de códigos del dataset"):
+
     st.markdown("""
 ### Estado civil
 - 1 = Soltero
@@ -49,28 +50,127 @@ with st.expander("📖 Ver leyenda de códigos del dataset"):
 - 5 = Unión de hecho
 - 6 = Separado legalmente
 
+---
+
 ### Tipo de asistencia
 - 0 = Nocturna
 - 1 = Diurna
+
+---
 
 ### Género
 - 0 = Femenino
 - 1 = Masculino
 
+---
+
 ### Variables binarias
-Aplica para: desplazado, necesidades educativas especiales, deudor, pagos al día, becado e internacional.
+
+Las siguientes variables utilizan la misma codificación:
+
+- ¿Tiene deuda?
+- ¿Pagos al día?
+- ¿Tiene beca?
+- ¿Estudiante desplazado?
+- ¿Necesidades educativas especiales?
+- ¿Estudiante internacional?
+
+Codificación:
 
 - 0 = No
 - 1 = Sí
 
-### Variables codificadas por el dataset
-Los campos como **modo de postulación**, **código de carrera**, **nacionalidad**, 
-**calificación previa**, **calificación de los padres** y **ocupación de los padres** 
-corresponden a códigos definidos por el conjunto de datos original.
+---
 
-Estos códigos se mantienen sin modificación para no alterar la estructura usada durante el entrenamiento del modelo.
+### Modo de postulación
+
+La variable **Modo de postulación** utiliza códigos oficiales definidos por el dataset original.
+
+Ejemplos:
+
+- 1 = Primera fase
+- 15 = Estudiante internacional
+- 17 = Segunda fase
+- 39 = Mayores de 23 años
+
+Los demás códigos corresponden a modalidades de admisión definidas en el conjunto de datos.
+
+---
+
+### Código de carrera
+
+El valor ingresado corresponde al **código oficial de la carrera universitaria** utilizado en el dataset.
+
+Ejemplos:
+
+- 171
+- 9070
+- 9119
+- 9254
+- 9500
+- 9773
+
+Cada código identifica una carrera específica.
+
+---
+
+### Nacionalidad
+
+La variable **Nacionalidad** utiliza los códigos oficiales del conjunto de datos.
+
+Ejemplos:
+
+- 1 = Portuguesa
+- 2 = Alemana
+- 6 = Española
+- 11 = Italiana
+- 14 = Inglesa
+- 41 = Brasileña
+- 109 = Colombiana
+
+Los demás códigos corresponden a nacionalidades registradas en el dataset original.
+
+---
+
+### Calificación previa
+
+Representa el tipo de formación académica antes del ingreso a la universidad.
+
+Ejemplos:
+
+- 1 = Educación secundaria
+- 2 = Bachillerato
+- 3 = Licenciatura
+- 4 = Maestría
+
+Los demás valores siguen la codificación oficial del dataset.
+
+---
+
+### Calificación de la madre y del padre
+
+Las variables **Mother's qualification** y **Father's qualification**
+están codificadas mediante valores numéricos definidos por el conjunto de datos.
+
+Cada número representa un nivel educativo específico.
+
+---
+
+### Ocupación de la madre y del padre
+
+Las variables **Mother's occupation** y **Father's occupation**
+emplean códigos numéricos propios del dataset.
+
+Cada código representa una ocupación determinada según la clasificación utilizada por el conjunto de datos.
+
+---
+
+### Importante
+
+Esta aplicación mantiene la codificación original utilizada durante el entrenamiento del modelo de aprendizaje estadístico.
+
+Modificar dichos códigos o reemplazarlos por valores diferentes alteraría la estructura de entrada del modelo y podría generar predicciones incorrectas.
 """)
-
 # =========================
 # FORMULARIO
 # =========================
