@@ -103,14 +103,22 @@ El valor ingresado corresponde al **código oficial de la carrera universitaria*
 
 Ejemplos:
 
-- 171
-- 9070
-- 9119
-- 9254
-- 9500
-- 9773
+- 171 = Animación y Diseño Multimedia
+- 9003 = Agronomía
+- 9070 = Diseño de Comunicación
+- 9085 = Enfermería Veterinaria
+- 9119 = Ingeniería Informática
+- 9130 = Bioquímica
+- 9147 = Gestión
+- 9238 = Servicio Social
+- 9254 = Turismo
+- 9500 = Enfermería
+- 9556 = Higiene Oral
+- 9670 = Publicidad y Marketing
+- 9773 = Periodismo y Comunicación
+- 9853 = Educación Básica
 
-Cada código identifica una carrera específica.
+Los códigos restantes corresponden a otras carreras definidas en el dataset original.
 
 ---
 
@@ -149,19 +157,43 @@ Los demás valores siguen la codificación oficial del dataset.
 
 ### Calificación de la madre y del padre
 
-Las variables **Mother's qualification** y **Father's qualification**
-están codificadas mediante valores numéricos definidos por el conjunto de datos.
+- 1 = Educación secundaria
+- 2 = Educación superior (Licenciatura)
+- 3 = Educación superior (Maestría)
+- 4 = Educación superior (Doctorado)
+- 5 = Educación superior (Grado/Bachiller)
+- 6 = Frecuencia de educación superior
+- 9 = 12.º año de escolaridad (no completado)
+- 10 = 11.º año de escolaridad
+- 12 = Otro – 11.º año de escolaridad
+- 14 = 10.º año de escolaridad
+- 18 = Educación básica
+- 19 = Educación básica (1.er ciclo)
+- 22 = Educación técnica o profesional
+- 27 = Educación superior – Licenciatura (1.er ciclo)
+- 29 = Educación superior – Maestría (2.º ciclo)
+- 30 = Educación superior – Doctorado (3.er ciclo)
+- 34 = Educación superior – Técnico Superior Profesional
+- 35 = Educación superior – Grado
 
-Cada número representa un nivel educativo específico.
+Los demás códigos corresponden a otros niveles educativos definidos en el conjunto de datos original.
 
 ---
 
 ### Ocupación de la madre y del padre
 
-Las variables **Mother's occupation** y **Father's occupation**
-emplean códigos numéricos propios del dataset.
+- 0 = Otra ocupación / No especificada
+- 1 = Directivos y gerentes
+- 2 = Profesionales
+- 3 = Técnicos y profesionales de nivel intermedio
+- 4 = Personal administrativo
+- 5 = Trabajadores de servicios y vendedores
+- 6 = Agricultores y trabajadores agropecuarios
+- 7 = Trabajadores cualificados de la industria y construcción
+- 8 = Operadores de maquinaria y ensambladores
+- 9 = Trabajadores no cualificados
 
-Cada código representa una ocupación determinada según la clasificación utilizada por el conjunto de datos.
+Existen otros códigos específicos definidos por el conjunto de datos original, los cuales se mantienen sin modificación para preservar la consistencia del modelo.
 
 ---
 
