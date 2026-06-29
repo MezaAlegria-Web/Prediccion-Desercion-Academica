@@ -2,6 +2,7 @@ import streamlit as st
 import pandas as pd
 import joblib
 import numpy as np
+from datetime import datetime
 
 modelo = joblib.load("modelo_desercion.pkl")
 scaler = joblib.load("scaler.pkl")
@@ -13,24 +14,22 @@ st.set_page_config(
     layout="wide"
 )
 
-st.markdown(
-    """
-    <div style="text-align:center;">
-        <h1>🎓 Sistema de Predicción de Deserción Académica</h1>
-        <p style="font-size:18px;">
-        Proyecto de Aprendizaje Estadístico basado en Machine Learning para estimar
-        el estado académico de un estudiante universitario.
-        </p>
-    </div>
-    """,
-    unsafe_allow_html=True
-)
+st.markdown("""
+<div style="text-align:center;">
+    <h1>🎓 Sistema de Predicción de Deserción Académica</h1>
+    <p style="font-size:18px;">
+    Aplicación web basada en Aprendizaje Estadístico para estimar el estado académico
+    de un estudiante universitario.
+    </p>
+</div>
+""", unsafe_allow_html=True)
 
 st.markdown("---")
 
 si_no = {"No": 0, "Sí": 1}
 genero_opciones = {"Femenino": 0, "Masculino": 1}
 asistencia_opciones = {"Nocturna": 0, "Diurna": 1}
+
 estado_civil_opciones = {
     "Soltero": 1,
     "Casado": 2,
@@ -40,43 +39,59 @@ estado_civil_opciones = {
     "Separado legalmente": 6
 }
 
+st.info(
+    "Nota: algunas variables como modo de postulación, carrera, nacionalidad, "
+    "calificación previa y ocupaciones se registran mediante códigos numéricos institucionales del dataset."
+)
+
 st.subheader("📋 Datos principales del estudiante")
 
 col1, col2, col3 = st.columns(3)
 
 with col1:
-    marital_status = estado_civil_opciones[
-        st.selectbox("Estado civil", list(estado_civil_opciones.keys()))
-    ]
+    estado_civil_txt = st.selectbox("Estado civil", list(estado_civil_opciones.keys()))
+    marital_status = estado_civil_opciones[estado_civil_txt]
+
     application_mode = st.number_input("Modo de postulación", value=17)
     application_order = st.number_input("Orden de postulación", value=5)
     course = st.number_input("Código de carrera", value=171)
-    daytime_evening = asistencia_opciones[
-        st.selectbox("Tipo de asistencia", list(asistencia_opciones.keys()))
-    ]
+
+    asistencia_txt = st.selectbox("Tipo de asistencia", list(asistencia_opciones.keys()))
+    daytime_evening = asistencia_opciones[asistencia_txt]
+
     previous_qualification = st.number_input("Calificación previa", value=1)
 
 with col2:
     previous_qualification_grade = st.number_input("Nota de calificación previa", value=122.0)
     admission_grade = st.number_input("Nota de admisión", value=127.3)
-    gender = genero_opciones[
-        st.selectbox("Género", list(genero_opciones.keys()))
-    ]
+
+    genero_txt = st.selectbox("Género", list(genero_opciones.keys()))
+    gender = genero_opciones[genero_txt]
+
     age = st.number_input("Edad al matricularse", value=20)
-    debtor = si_no[st.selectbox("¿Tiene deuda?", list(si_no.keys()))]
-    tuition_fees = si_no[st.selectbox("¿Pagos al día?", list(si_no.keys()))]
+
+    deuda_txt = st.selectbox("¿Tiene deuda?", list(si_no.keys()))
+    debtor = si_no[deuda_txt]
+
+    pagos_txt = st.selectbox("¿Pagos al día?", list(si_no.keys()))
+    tuition_fees = si_no[pagos_txt]
 
 with col3:
-    scholarship = si_no[st.selectbox("¿Tiene beca?", list(si_no.keys()))]
-    displaced = si_no[st.selectbox("¿Estudiante desplazado?", list(si_no.keys()))]
-    educational_special_needs = si_no[
-        st.selectbox("¿Necesidades educativas especiales?", list(si_no.keys()))
-    ]
-    international = si_no[st.selectbox("¿Estudiante internacional?", list(si_no.keys()))]
+    beca_txt = st.selectbox("¿Tiene beca?", list(si_no.keys()))
+    scholarship = si_no[beca_txt]
+
+    desplazado_txt = st.selectbox("¿Estudiante desplazado?", list(si_no.keys()))
+    displaced = si_no[desplazado_txt]
+
+    necesidades_txt = st.selectbox("¿Necesidades educativas especiales?", list(si_no.keys()))
+    educational_special_needs = si_no[necesidades_txt]
+
+    internacional_txt = st.selectbox("¿Estudiante internacional?", list(si_no.keys()))
+    international = si_no[internacional_txt]
+
     nationality = st.number_input("Nacionalidad", value=1)
 
 st.markdown("---")
-
 st.subheader("📚 Rendimiento académico")
 
 col4, col5 = st.columns(2)
@@ -98,7 +113,6 @@ with col5:
     cu2_without = st.number_input("Sin evaluación 2do semestre", value=0)
 
 st.markdown("---")
-
 st.subheader("👨‍👩‍👧 Variables familiares y socioeconómicas")
 
 col6, col7, col8 = st.columns(3)
@@ -117,27 +131,14 @@ with col8:
     gdp = st.number_input("PIB", value=1.74)
 
 columnas = [
-    'Marital Status',
-    'Application mode',
-    'Application order',
-    'Course',
-    'Daytime/evening attendance',
-    'Previous qualification',
-    'Previous qualification (grade)',
-    'Nacionality',
-    "Mother's qualification",
-    "Father's qualification",
-    "Mother's occupation",
-    "Father's occupation",
-    'Admission grade',
-    'Displaced',
-    'Educational special needs',
-    'Debtor',
-    'Tuition fees up to date',
-    'Gender',
-    'Scholarship holder',
-    'Age at enrollment',
-    'International',
+    'Marital Status', 'Application mode', 'Application order', 'Course',
+    'Daytime/evening attendance', 'Previous qualification',
+    'Previous qualification (grade)', 'Nacionality',
+    "Mother's qualification", "Father's qualification",
+    "Mother's occupation", "Father's occupation", 'Admission grade',
+    'Displaced', 'Educational special needs', 'Debtor',
+    'Tuition fees up to date', 'Gender', 'Scholarship holder',
+    'Age at enrollment', 'International',
     'Curricular units 1st sem (credited)',
     'Curricular units 1st sem (enrolled)',
     'Curricular units 1st sem (evaluations)',
@@ -150,48 +151,21 @@ columnas = [
     'Curricular units 2nd sem (approved)',
     'Curricular units 2nd sem (grade)',
     'Curricular units 2nd sem (without evaluations)',
-    'Unemployment rate',
-    'Inflation rate',
-    'GDP'
+    'Unemployment rate', 'Inflation rate', 'GDP'
 ]
 
 valores = [
-    marital_status,
-    application_mode,
-    application_order,
-    course,
-    daytime_evening,
-    previous_qualification,
-    previous_qualification_grade,
-    nationality,
-    mother_qualification,
-    father_qualification,
-    mother_occupation,
-    father_occupation,
-    admission_grade,
-    displaced,
-    educational_special_needs,
-    debtor,
-    tuition_fees,
-    gender,
-    scholarship,
-    age,
-    international,
-    cu1_credited,
-    cu1_enrolled,
-    cu1_evaluations,
-    cu1_approved,
-    cu1_grade,
-    cu1_without,
-    cu2_credited,
-    cu2_enrolled,
-    cu2_evaluations,
-    cu2_approved,
-    cu2_grade,
-    cu2_without,
-    unemployment,
-    inflation,
-    gdp
+    marital_status, application_mode, application_order, course,
+    daytime_evening, previous_qualification, previous_qualification_grade,
+    nationality, mother_qualification, father_qualification,
+    mother_occupation, father_occupation, admission_grade,
+    displaced, educational_special_needs, debtor, tuition_fees,
+    gender, scholarship, age, international,
+    cu1_credited, cu1_enrolled, cu1_evaluations, cu1_approved,
+    cu1_grade, cu1_without,
+    cu2_credited, cu2_enrolled, cu2_evaluations, cu2_approved,
+    cu2_grade, cu2_without,
+    unemployment, inflation, gdp
 ]
 
 datos = pd.DataFrame([valores], columns=columnas)
@@ -206,17 +180,29 @@ if st.button("🔍 Predecir estado académico"):
     probabilidades = modelo.predict_proba(datos_scaled)[0]
     probabilidad_maxima = np.max(probabilidades) * 100
 
+    fecha_hora = datetime.now().strftime("%d/%m/%Y %H:%M:%S")
+
     st.subheader("📌 Resultado de la predicción")
 
     if resultado == "Dropout":
         st.error("🔴 Resultado estimado: Dropout")
-        st.write("El estudiante presenta riesgo de deserción académica.")
+        st.write(
+            "El modelo estima una alta probabilidad de deserción académica. "
+            "Se recomienda realizar seguimiento académico, tutoría personalizada "
+            "y apoyo institucional oportuno."
+        )
     elif resultado == "Enrolled":
         st.warning("🟡 Resultado estimado: Enrolled")
-        st.write("El estudiante se mantiene inscrito, pero requiere seguimiento académico.")
+        st.write(
+            "El estudiante se mantiene matriculado. Se recomienda continuar con el "
+            "monitoreo académico para prevenir posibles riesgos futuros."
+        )
     else:
         st.success("🟢 Resultado estimado: Graduate")
-        st.write("El estudiante presenta alta probabilidad de éxito académico.")
+        st.write(
+            "El estudiante presenta un perfil favorable para culminar satisfactoriamente "
+            "sus estudios universitarios."
+        )
 
     st.metric("Nivel de confianza del modelo", f"{probabilidad_maxima:.2f}%")
     st.progress(int(probabilidad_maxima))
@@ -228,18 +214,51 @@ if st.button("🔍 Predecir estado académico"):
         st.write(f"{clase}: {porcentaje:.2f}%")
         st.progress(int(porcentaje))
 
-    st.markdown("### Datos ingresados")
-    st.dataframe(datos)
+    st.markdown("### 🧾 Resumen del estudiante")
+
+    resumen = pd.DataFrame({
+        "Variable": [
+            "Estado civil",
+            "Tipo de asistencia",
+            "Género",
+            "Edad",
+            "Tiene deuda",
+            "Pagos al día",
+            "Tiene beca",
+            "Nota de admisión",
+            "Nota 1er semestre",
+            "Nota 2do semestre",
+            "Tasa de desempleo",
+            "Tasa de inflación",
+            "PIB",
+            "Fecha y hora de predicción"
+        ],
+        "Valor": [
+            estado_civil_txt,
+            asistencia_txt,
+            genero_txt,
+            age,
+            deuda_txt,
+            pagos_txt,
+            beca_txt,
+            admission_grade,
+            cu1_grade,
+            cu2_grade,
+            unemployment,
+            inflation,
+            gdp,
+            fecha_hora
+        ]
+    })
+
+    st.table(resumen)
 
 st.markdown("---")
 
-st.markdown(
-    """
-    <div style="text-align:center; font-size:14px;">
-        Proyecto Final de Aprendizaje Estadístico<br>
-        Sistema de Predicción de Deserción Académica Universitaria<br>
-        Desarrollado con Python, Scikit-Learn, GitHub y Streamlit
-    </div>
-    """,
-    unsafe_allow_html=True
-)
+st.markdown("""
+<div style="text-align:center; font-size:14px;">
+    Proyecto Final de Aprendizaje Estadístico<br>
+    Sistema de Predicción de Deserción Académica Universitaria<br>
+    Desarrollado con Python, Scikit-Learn, GitHub y Streamlit
+</div>
+""", unsafe_allow_html=True)
